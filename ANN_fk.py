@@ -25,6 +25,12 @@ import keras.backend as K
 import toy_data
 
 
+def import_data(filename=toy_data.filename):
+	with open(filename, 'r') as f:
+		data = list(csv.reader(f))[1:]       # exclude first row (heading)  
+		data = [d[1:] for d in data]         # exclude first column (link length)
+		data = np.array(data).astype(float)  
+	return data
 
 
 def scaling(trainX, testX, trainy, testy):
@@ -71,15 +77,54 @@ def build_model():
 	return model
 
 
+def plot_loss(history):
+	plt.clf()
+	plt.title('Loss (Mean Squared Error)')
+	plt.plot(history.history['loss'], label='train')
+	#pyplot.plot(history.history['val_loss'], label='test')
+	plt.legend()
+	plt.show()
 
+
+def single_prediction(point):
+	# data_point = np.array([-2, -1.2, 1]).reshape(1, trainX.shape[1])
+	point = np.array(point).reshape(1, -1)
+	point = scaler_x.transform(point)
+	prediction = model.predict(point)
+	real_prediction = scaler_y.inverse_transform(prediction)
+	real_prediction = np.around(np.around(real_prediction, 2), 2)
+
+	return real_prediction
+
+
+def analytical_solution(point):
+	point = np.array(point).reshape(1, -1)
+	a = point[0,0]
+	b = point[0,1]
+	c = point[0,2]
+
+	sol = []
+	sol.append(toy_data.Xe(a, b, c, toy_data.L))
+	sol.append(toy_data.Ye(a, b, c, toy_data.L))
+	sol.append(toy_data.theta(a, b, c))
+	sol = np.array(sol)
+	sol = np.around(sol, 2)
+
+	return sol
+
+def predict_and_check(point):
+	real_prediction = single_prediction(point)
+
+	# check prediction against analytical solution
+	sol = analytical_solution(point)
+
+	print(f'data point = {point} \nprediction (real units) = {real_prediction} \nanalytical solution = {sol}')
 
 if __name__ == "__main__":
 
 	# import data 
-	with open(toy_data.filename, 'r') as f:
-		data = list(csv.reader(f))[1:]       # exclude first row (heading)
-		data = [d[1:] for d in data]         # exclude first column (link length) 
-		data = np.array(data).astype(float)
+	data = import_data()
+
 
 	# segmentation 
 	features = data[:, :3] # features are joint angles 
@@ -110,35 +155,13 @@ if __name__ == "__main__":
 
 
 	# plot loss during training
-	plt.clf()
-	plt.title('Loss (Mean Squared Error)')
-	plt.plot(history.history['loss'], label='train')
-	#pyplot.plot(history.history['val_loss'], label='test')
-	plt.legend()
-	plt.show()
+	plot_loss(history)
+	
 
 	# single prediction
-	# data_point = np.array([-2, -1.2, 1]).reshape(1, trainX.shape[1])
-	data_point = np.array([-2, -1.2, 1]).reshape(1, -1)
-	data_point = scaler_x.transform(data_point)
-	prediction = model.predict(data_point)
-	real_prediction = scaler_y.inverse_transform(prediction)
-	print(real_prediction)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+	point = [-2, -1.2, 1]
+	# check a single prediction
+	predict_and_check(point)
 
 
 
