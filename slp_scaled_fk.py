@@ -21,6 +21,7 @@ from keras.layers import Dense
 from keras.models import Sequential
 from keras.optimizers import SGD
 import tensorflow as tf
+import toy_data
 
 
 def scaling(trainX, testX, trainy, testy):
@@ -44,7 +45,7 @@ def scaling(trainX, testX, trainy, testy):
 
 	return scaler_x, scaler_y, trainX_, testX_, trainy_, testy_ 
 
-def import_data(filename='robot_data.csv'):
+def import_data(filename=toy_data.filename):
 	with open(filename, 'r') as f:
 		data = list(csv.reader(f))[1:]       # exclude first row (heading)  
 		data = [d[1:] for d in data]         # exclude first column (link length)

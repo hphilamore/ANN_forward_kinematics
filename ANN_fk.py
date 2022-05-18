@@ -11,7 +11,6 @@ https://machinelearningmastery.com/how-to-improve-neural-network-stability-and-m
 
 
 import random
-import math
 import csv
 import numpy as np
 from matplotlib import pyplot as plt
@@ -23,68 +22,69 @@ import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras.callbacks import TensorBoard
 import keras.backend as K
+import toy_data
 
 
 
 
-def Xe(a,b,c,L):
-	"X coordinate of end effector"
-	return (L * np.cos(a) + 
-			L * np.cos(a+b) +
-			L * np.cos(a+b+c))
+# def Xe(a,b,c,L):
+# 	"X coordinate of end effector"
+# 	return (L * np.cos(a) + 
+# 			L * np.cos(a+b) +
+# 			L * np.cos(a+b+c))
 
-def Ye(a,b,c,L):
-	"Y coordinate of end effector"
-	return (L * np.sin(a) + 
-			L * np.sin(a+b) +
-			L * np.sin(a+b+c))
+# def Ye(a,b,c,L):
+# 	"Y coordinate of end effector"
+# 	return (L * np.sin(a) + 
+# 			L * np.sin(a+b) +
+# 			L * np.sin(a+b+c))
 
-def theta(a,b,c):
-	"Total angular displacement of end effector"
-	return(a + b + c)
-
-
-
-def toy_data(L):
-	"""
-	Saves set of end effector x,y coordinates and angular displacements (theta)
-	for fixed link lengths (L) and randomly selected input angles (a-c) 
-	"""
-	with open('robot_data.csv', 'w') as f:
-			w = csv.writer(f)
-
-			w.writerow(['L', 'a', 'b', 'c', 'xe', 'ye', 'th'])
-
-			for i in range(100):
-				a = random.uniform(-np.pi, 0) # angle 1
-				b = random.uniform(-np.pi, 0) # angle 2
-				c = random.uniform(-np.pi/2, np.pi/2) # angle 3
-
-				xe = Xe(a,b,c,L)
-				ye = Ye(a,b,c,L)
-				th = theta(a,b,c)
-
-				w.writerow([L, a, b, c, xe, ye, th])
-
-def plot_toy_data():
-	""" Plots toy data """
-	with open('robot_data.csv', 'r') as f:
-		r = csv.reader(f)
+# def theta(a,b,c):
+# 	"Total angular displacement of end effector"
+# 	return(a + b + c)
 
 
-		for line in list(r)[1:]:
-			a, b, c, xe, ye, th  = float(line[1]), float(line[2]), float(line[3]), float(line[4]), float(line[5]), float(line[6])
 
-			# plot angle of end effector
-			plt.plot([xe, xe+0.2*np.cos(th)],
-					 [ye, ye+0.2*np.sin(th)], 'k-')	
+# def toy_data(L):
+# 	"""
+# 	Saves set of end effector x,y coordinates and angular displacements (theta)
+# 	for fixed link lengths (L) and randomly selected input angles (a-c) 
+# 	"""
+# 	with open('robot_data.csv', 'w') as f:
+# 			w = csv.writer(f)
 
-			# plot position of end effector
-			plt.plot(xe, ye, 'ro')
+# 			w.writerow(['L', 'a', 'b', 'c', 'xe', 'ye', 'th'])
 
-		plt.title('Data set of end effector positions and orientations')
-		plt.savefig('robot_data_plotted.png')
-		#plt.show()
+# 			for i in range(100):
+# 				a = random.uniform(-np.pi, 0) # angle 1
+# 				b = random.uniform(-np.pi, 0) # angle 2
+# 				c = random.uniform(-np.pi/2, np.pi/2) # angle 3
+
+# 				xe = Xe(a,b,c,L)
+# 				ye = Ye(a,b,c,L)
+# 				th = theta(a,b,c)
+
+# 				w.writerow([L, a, b, c, xe, ye, th])
+
+# def plot_toy_data():
+# 	""" Plots toy data """
+# 	with open('robot_data.csv', 'r') as f:
+# 		r = csv.reader(f)
+
+
+# 		for line in list(r)[1:]:
+# 			a, b, c, xe, ye, th  = float(line[1]), float(line[2]), float(line[3]), float(line[4]), float(line[5]), float(line[6])
+
+# 			# plot angle of end effector
+# 			plt.plot([xe, xe+0.2*np.cos(th)],
+# 					 [ye, ye+0.2*np.sin(th)], 'k-')	
+
+# 			# plot position of end effector
+# 			plt.plot(xe, ye, 'ro')
+
+# 		plt.title('Data set of end effector positions and orientations')
+# 		plt.savefig('robot_data_plotted.png')
+# 		#plt.show()
 
 
 def scaling(trainX, testX, trainy, testy):
@@ -138,14 +138,14 @@ def build_model():
 
 if __name__ == "__main__":
 
-	# Generate toy data set
-	toy_data(1)
+	# # Generate toy data set
+	# toy_data(1)
 
-	# Plot toy data
-	plot_toy_data()
+	# # Plot toy data
+	# plot_toy_data()
 
 	# import data 
-	with open('robot_data.csv', 'r') as f:
+	with open(toy_data.filename, 'r') as f:
 		data = list(csv.reader(f))[1:]       # exclude first row (heading)
 		data = [d[1:] for d in data]         # exclude first column (link length) 
 		data = np.array(data).astype(float)
