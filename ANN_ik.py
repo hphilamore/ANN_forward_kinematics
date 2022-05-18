@@ -95,9 +95,9 @@ def scaling():
 		# fit and transform in one step
 		normalized = scaler.fit_transform(data)
 		# inverse transform
-		inverse = scaler.inverse_transform(normalized)
+		inverse_scaler = scaler.inverse_transform(normalized)
 
-		return scaler, inverse, normalized 
+		return scaler, inverse_scaler, normalized 
 
 
 def customloss(Ytrue, Ypred):
@@ -133,7 +133,7 @@ if __name__ == "__main__":
 	plot_toy_data()
 
 	# Scaling using tanh
-	scaler, inverse, data_scaled = scaling()
+	scaler, inverse_scaler, data_scaled = scaling()
 
 
 	# Segmentation
@@ -162,7 +162,8 @@ if __name__ == "__main__":
 
 	# Test using test data
 	prediction = model.predict(Xtest) 
-	#prediction = scaler.inverse_transform(prediction) # transform back to real units 
+	print(prediction, type(prediction))
+	prediction = inverse_scaler(prediction) # transform back to real units 
 
 
 
