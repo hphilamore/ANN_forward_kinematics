@@ -77,18 +77,8 @@ def build_model():
 
 if __name__ == "__main__":
 
-	# Generate toy data set
-	# toy_data(1)
-
-	# Plot toy data
-	# plot_toy_data()
-
 	# import data 
 	data = import_data()
-	# with open('robot_data.csv', 'r') as f:
-	# 	data = list(csv.reader(f))[1:]       # exclude first row (heading)  
-	# 	data = [d[1:] for d in data]         # exclude first column (link length)
-	# 	data = np.array(data).astype(float)  
 
 
 	# segmentation 
