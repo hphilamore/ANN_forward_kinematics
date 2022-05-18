@@ -158,16 +158,6 @@ if __name__ == "__main__":
 	
 
 	# single prediction
-	point = [-2, -1.2, 1]
+	point = [-2.8, -1, 1]
 	# check a single prediction
 	predict_and_check(point)
-
-
-	# real_prediction = single_prediction(point)
-
-
-	# # check prediction against analytical solution
-	# sol = analytical_solution()
-
-
-	# print(f'data point = {point} \nprediction (real units) = {real_prediction} \nanalytical solution = {sol}')
