@@ -78,26 +78,32 @@ def plot_toy_data():
 		#plt.show()
 
 
-def scaling():
-	with open('robot_data.csv', 'r') as f:
-		data = list(csv.reader(f))[1:]
-		data = np.array(data).astype(float)
-		# scaler = MinMaxScaler(feature_range=(-1,1))
-		# data_scaled = scaler.fit_transform(data)
+def scaling(Xtrain, Xtest, Ytrain, Ytest):
+	# with open('robot_data.csv', 'r') as f:
+	# 	data = list(csv.reader(f))[1:]
+	# 	data = np.array(data).astype(float)
+	# 	# scaler = MinMaxScaler(feature_range=(-1,1))
+	# 	# data_scaled = scaler.fit_transform(data)
 
-		# create scaler
-		scaler = MinMaxScaler(feature_range=(-1,1))
-		# # fit scaler on data
-		# scaler.fit(data)
-		# # apply transform
-		# normalized = scaler.transform(data)
+	# create scalers for x and y data shapes 
+	scaler_x = MinMaxScaler(feature_range=(-1,1))
+	scaler_y = MinMaxScaler(feature_range=(-1,1))
 
-		# fit and transform in one step
-		normalized = scaler.fit_transform(data)
-		# inverse transform
-		inverse_scaler = scaler.inverse_transform(normalized)
+	# fit scaler on training data
+	scaler_x.fit(Xtrain)
+	scaler_y.fit(Ytrain)
 
-		return scaler, inverse_scaler, normalized 
+	# apply transform
+	Xtrain_ = scaler_x.transform(Xtrain)
+	Xtest_ = scaler_x.transform(Xtest)
+	Ytrain_ = scaler_y.transform(Ytrain)
+	Ytest_ = scaler_y.transform(Ytest)
+
+	# # inverse transform
+	# inverse = scaler.inverse_transform(normalized)
+
+	return scaler_x, scaler_y, Xtrain_, Xtest_, Ytrain_, Ytest_ 
+
 
 
 def customloss(Ytrue, Ypred):
@@ -132,20 +138,21 @@ if __name__ == "__main__":
 	# Plot toy data
 	plot_toy_data()
 
-	# Scaling using tanh
-	scaler, inverse_scaler, data_scaled = scaling()
+	# import data 
+	with open('robot_data.csv', 'r') as f:
+		data = list(csv.reader(f))[1:]       # exclude first column (link length) 
+		data = np.array(data).astype(float)
 
-
-	# Segmentation
-	features = data_scaled[:, 1:4] # features are joint angles 
-	labels = data_scaled[:, 4:]    # labels are end effector x,y position and angle (theta) 
+	# segmentation 
+	features = data[:, :3] # features are joint angles 
+	labels = data[:, 3:]    # labels are end effector x,y position and angle (theta) 
 
 	Xtrain, Xtest, Ytrain, Ytest = train_test_split(features, labels, 
 													test_size=0.3)  # split test and train
 	
-	Xval, Xtest, Yval, Ytest = train_test_split(Xtest, Ytest, 
-												test_size=0.5) # split test and validation (0.5 x 0.3 = 0.15)
 
+	# Scaling using tanh
+	scaler_x, scaler_y, Xtrain_, Xtest_, Ytrain_, Ytest_ = scaling(Xtrain, Xtest, Ytrain, Ytest)
 
 	
 	# ANN model
